@@ -1,31 +1,44 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Mission06_Zarges.Models;
 
-namespace Mission06_Zarges.Controllers;
-
-public class HomeController : Controller
+namespace Mission06_Zarges.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly MovieContext _context;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(MovieContext context)
+        {
+            _context = context;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public IActionResult GetToKnowJoel()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult AddMovie()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddMovie(Movie response)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Movies.Add(response);
+                _context.SaveChanges();
+                return View("Confirmation", response);
+            }
+
+            return View(response);
+        }
     }
 }
