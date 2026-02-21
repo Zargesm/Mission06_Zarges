@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Mission06_Zarges.Models;
 
 namespace Mission06_Zarges.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly MovieContext _context;
+        private MovieContext _context;
 
         public HomeController(MovieContext context)
         {
@@ -22,12 +24,24 @@ namespace Mission06_Zarges.Controllers
             return View();
         }
 
+        // =============================
+        // ADD MOVIE - GET
+        // =============================
         [HttpGet]
         public IActionResult AddMovie()
         {
+            ViewBag.Categories = new SelectList(
+                _context.Categories.OrderBy(c => c.CategoryName),
+                "CategoryId",
+                "CategoryName"
+            );
+
             return View();
         }
 
+        // =============================
+        // ADD MOVIE - POST
+        // =============================
         [HttpPost]
         public IActionResult AddMovie(Movie response)
         {
@@ -35,10 +49,22 @@ namespace Mission06_Zarges.Controllers
             {
                 _context.Movies.Add(response);
                 _context.SaveChanges();
-                return View("Confirmation", response);
+
+                return RedirectToAction("Confirmation");
             }
 
+            ViewBag.Categories = new SelectList(
+                _context.Categories.OrderBy(c => c.CategoryName),
+                "CategoryId",
+                "CategoryName"
+            );
+
             return View(response);
+        }
+
+        public IActionResult Confirmation()
+        {
+            return View();
         }
     }
 }
